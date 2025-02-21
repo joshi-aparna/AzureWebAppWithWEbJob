@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2023-01-01",
+      "kind": "windows",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "P1mv3",
+        "tier": "PremiumV3",
+        "size": "P1mv3",
+        "family": "Pv3",
+        "capacity": 1
+      },
+      "properties": {
+        "reserved": false,
+        "hyperV": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "siteConfig": {
+          "alwaysOn": true,
+          "appSettings": [
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "https://<<REGISTRY NAME>>.azurecr.io"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+              "value": "<DOCKER_REGISTRY_SERVER_USERNAME>"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+              "value": "<<DOCKER_REGISTRY_SERVER_PASSWORD>>"
+            },
+            {
+              "name": "WEBSITES_PORT",
+              "value": 8080
+            },
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "true"
+            },
+            {
+              "name": "WEBJOBS_IDLE_TIMEOUT",
+              "value": 86400
+            }
+          ],
+          "windowsFxVersion": "DOCKER|<<REGISTRYNAME>>.azurecr.io/<<Repo Name>>:<<TAG>>"
+        }
+      }
+    }
+  ],
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "West US",
+      "metadata": {
+        "description": "Location for the resources."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "basic",
+      "allowedValues": [
+        "free",
+        "basic",
+        "standard",
+        "standard2",
+        "standard3",
+        "storage_optimized_l1",
+        "storage_optimized_l2"
+      ],
+      "metadata": {
+        "description": "The pricing tier of the search service."
+      }
+    },
+    "replicaCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of replicas for the search service."
+      }
+    },
+    "partitionCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of partitions for the search service."
+      }
+    },
+    "appServicePlanName": {
+      "defaultValue": "[concat(toLower(resourceGroup().name), '-serviceplan')]",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the App Service Plan."
+      }
+    },
+    "webAppName": {
+      "defaultValue": "[concat(toLower(resourceGroup().name), 'webapp')]",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Web App."
+      }
+    }
+  }
+}

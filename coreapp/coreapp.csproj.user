@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ActiveDebugProfile>Container (Dockerfile)</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\aravindra\source\repos\personal\blog\webappwithwebjob\coreapp\Properties\PublishProfiles\coreapp20250221134834.pubxml</NameOfLastUsedPublishProfile>
+  </PropertyGroup>
+</Project>
